@@ -1,5 +1,5 @@
 # JenkinsScripts
-My jenkins script for TRACIM
+Jenkins script for TRACIM
 
 Plugin i use : https://github.com/codeclou/jenkins-github-webhook-build-trigger-plugin
 
