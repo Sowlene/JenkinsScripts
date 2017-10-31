@@ -1,0 +1,101 @@
+#!/bin/bash
+
+set -e
+
+echo "GWBT_COMMIT_BEFORE:  $GWBT_COMMIT_BEFORE" >> Commit_before.txt
+echo "GWBT_COMMIT_AFTER:   $GWBT_COMMIT_AFTER"
+echo "GWBT_REF:            $GWBT_REF"
+echo "GWBT_TAG:            $GWBT_TAG" >> Tag.txt
+echo "GWBT_BRANCH:         $GWBT_BRANCH" >> Branch.txt
+echo "GWBT_REPO_CLONE_URL: $GWBT_REPO_CLONE_URL"
+echo "GWBT_REPO_HTML_URL:  $GWBT_REPO_HTML_URL" 
+echo "GWBT_REPO_FULL_NAME: $GWBT_REPO_FULL_NAME" >> Repo_Full_Name.txt
+echo "GWBT_REPO_NAME:      $GWBT_REPO_NAME" 
+
+touch Commit_after.txt
+cat Commit_after.txt
+#
+# Cleanup before run
+#
+rm -rf $WORKSPACE/\.git || true
+rm -rf $WORKSPACE/* || true
+cd $WORKSPACE
+
+#
+# Prevent manual Job starts
+#
+if [[ -z "$GWBT_COMMIT_AFTER" ]]
+then
+    echo "Commit_After: NONE -- I don't want to be build manually, i need to be triggered by Webhook !"
+    exit 1
+fi
+
+#
+# Don't build if no branch connected. 
+#
+
+if [ -z "$GWBT_BRANCH" ]
+then
+	echo "Branch: NONE -- You can't triggered jobs without branch, please retry with one"
+    echo "Branch: NONE -- if you've just create a new tag, don't worried about this message"
+	exit 1    
+fi
+
+
+#
+# Conditionnal specific branch
+#
+
+# First case : algoo/tracim_testing:latest
+if [ "$GWBT_BRANCH" == "develop" ]
+then
+	echo "Branch: develop -- We will build algoo/tracim : latest"
+    pwd
+    touch Commit_after.txt
+    echo "$GWBT_COMMIT_AFTER" >> Commit_after.txt 
+    cp Commit_after.txt /var/lib/jenkins/workspace/scenario1/
+    curl -X POST -u Hook:F9ipm86T http://109.190.39.74:8080/job/scenario1/build
+fi
+
+# Second case : Depend of the first.
+
+
+# 3th case : algoo/tracim : latest
+
+if [ -n $GWBT_TAG ] && [ -z $GWBT_BRANCH ]
+then
+	echo "Tag : $tag -- OK"
+    echo "WARNING -- TAG == OK / BRANCH == NONE : It's normal"
+	echo "You have to use git checkout master in your Jenkinsfile"
+    pwd
+    touch Tag.txt
+	touch 
+	echo "$GWBT_TAG" >> Tag.txt
+	cp  Tag.txt >> /var/lib/jenkins/workspace/scenario3/
+    curl -X POST -u Hook:F9ipm86T http://109.190.39.74:8080/job/scenario3/build
+
+fi
+
+
+# 4th & 5th cases : dev branches. 
+#if [ "$GWBT_BRANCH" == "feature" ]
+#then
+#	echo "You are on the feature branch so, enjoy it ! We are gonna do some tests !"
+	#curl -X POST -u Hook:F9ipm86T http://109.190.39.74:8080/job/scenario1/build
+	#sed -i '0,/cd Debian_Dev\//{s/cd Debian_Dev\//cd Debian_Dev\/ \&\& sed "s\/git checkout master\/git checkout development\/" \/var\/lib\/jenkins\/workspace\/Pip_Dev\/Dockerfile/}' /var/lib/jenkins/workspace/Pip_Prod/Jenkinsfile_Dev
+    #cat /var/lib/jenkins/workspace/Pip_Prod/Jenkinsfile_Dev
+#fi
+
+#
+# Clone specific branch
+#
+git clone --single-branch \
+          --branch $GWBT_BRANCH \
+          https://github.com/${GWBT_REPO_FULL_NAME}.git \
+          source
+
+#
+# Switch to specific revision
+#
+cd source
+git reset --hard $GWBT_COMMIT_AFTER
