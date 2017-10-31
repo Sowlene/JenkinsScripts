@@ -9,6 +9,8 @@ Pipeline number : 3
 __________________________________________________________________________
 Pipeline name : Scenario1
 
+"Le scénario n°1 se déclenche à chaque "push" sur la branche github "develop" du projet tracim.
+Il a pour but de publier ll'image Docker algoo/tracim_testing : latest."
 __________________________________________________________________________
 Pipeline name : Scenario2
 
