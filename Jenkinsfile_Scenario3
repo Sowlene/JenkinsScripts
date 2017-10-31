@@ -1,0 +1,38 @@
+pipeline {
+  agent any
+  stages {
+    stage('Welcome') {
+      steps {
+        parallel(
+          "Welcome": {
+           echo 'TAG == NEW. Scenario3 == Starting'
+          },
+          "Situation": {
+            sh 'pwd && who && ls -Shal #l not pass'
+            
+          }
+        )
+      }
+    }
+    stage('Build') {
+      steps {
+        parallel(
+          "Autorisations": {
+            sh 'ls -lhS /var/run/ | grep docker.sock'
+            echo 'Si un message concernant les permissions apparait faites un chmod 770 de ce fichier'
+            
+          },
+          "Build Debian_Uwsgi": {
+            sh 'git clone https://github.com/tracim/docker_tracim.git && cd docker_tracim/Debian_Uwsgi/ && cat Dockerfile && docker build -t algoo/tracim:$tag .'
+            
+          }
+        )
+      }
+    }
+    stage('Publication') {
+      steps {
+            echo 'You should push algoo/tracim:<"$tag"> on docker hub'
+      }
+    }
+  }
+}
