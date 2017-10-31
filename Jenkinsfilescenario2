@@ -1,0 +1,38 @@
+pipeline {
+  agent any
+  stages {
+    stage('Welcome') {
+      steps {
+        parallel(
+          "Welcome": {
+           echo 'Scenario 1 == OK. Scenario2 == Starting'
+          },
+          "Situation": {
+            sh 'pwd && who && ls -Shal #l not pass'
+            
+          }
+        )
+      }
+    }
+    stage('Build') {
+      steps {
+        parallel(
+          "Autorisations": {
+            sh 'ls -lhS /var/run/ | grep docker.sock'
+            echo 'Si un message concernant les permissions apparait faites un chmod 770 de ce fichier'
+            
+          },
+          "Build Debian_Uwsgi": {
+            sh 'cd docker_tracim/Debian_Uwsgi/ && cat Dockerfile && docker build -t algoo/tracim:unstable .'
+            
+          }
+        )
+      }
+    }
+    stage('Publication') {
+      steps {
+        echo 'You should push algoo/tracim:unstable on docker hub'
+      }
+    }
+  }
+}
