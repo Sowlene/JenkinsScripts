@@ -3,6 +3,7 @@ My jenkins script for TRACIM
 
 Plugin i use : https://github.com/codeclou/jenkins-github-webhook-build-trigger-plugin
 
+How i script this plugin --> PluginJenkinsScript
 
 Pipeline number : 3
 
