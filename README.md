@@ -12,6 +12,8 @@ Pipeline name : Scenario1
 __________________________________________________________________________
 Pipeline name : Scenario2
 
+"Le scénario n°2 se déclenche suite au scénario n°1, si celui-ci se termine correctement.
+Il a pour but de publier l'image Docker algoo/tracim:unstable"
 __________________________________________________________________________
 Pipeline name : Scenario3
 
