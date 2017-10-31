@@ -23,13 +23,13 @@ pipeline {
             
           },
           "Build Debian_Uwsgi": {
-            sh 'git clone https://github.com/tracim/docker_tracim.git && cd docker_tracim/Debian_Uwsgi/ && cat Dockerfile && docker build -t algoo/tracim:$tag .'
+            sh 'rm -Rf docker_tracim && git clone https://github.com/tracim/docker_tracim.git && cp Tag.txt /var/lib/jenkins/workspace/scenario3/docker_tracim/Debian_Uwsgi/ && cd docker_tracim/Debian_Uwsgi/ && cat Dockerfile && TAG=$(cat /var/lib/jenkins/workspace/scenario3/docker_tracim/Debian_Uwsgi/Tag.txt) && sed -i "s/git checkout master/git checkout $TAG/" /var/lib/jenkins/workspace/scenario3/docker_tracim/Debian_Uwsgi/Dockerfile && docker build -t algoo/tracim:$TAG .'
             
           }
         )
       }
     }
-    stage('Publication') {
+    stage('TO DO') {
       steps {
             echo 'You should push algoo/tracim:<"$tag"> on docker hub'
       }
